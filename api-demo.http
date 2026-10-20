@@ -1,0 +1,37 @@
+@baseUrl = http://localhost:4000
+@today = 1792521000000
+@userId = {{createUser.response.body.$.data._id}}
+@sessionId = {{available.response.body.$.data.sessions[0]._id}}
+
+### 1. Create a user
+# @name createUser
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "fullName": "Rahul Verma",
+  "email": "rahul.verma@example.com",
+  "phone": "+919812345678"
+}
+
+### 2. Available sessions today
+# @name available
+GET {{baseUrl}}/sessions/available?dateTimestamp={{today}}
+
+### 3. Book the first session
+POST {{baseUrl}}/sessions/{{sessionId}}/book
+Content-Type: application/json
+
+{ "userId": "{{userId}}" }
+
+### 4. Book the same session again -> 409
+POST {{baseUrl}}/sessions/{{sessionId}}/book
+Content-Type: application/json
+
+{ "userId": "{{userId}}" }
+
+### 5. Mark it completed
+PATCH {{baseUrl}}/sessions/{{sessionId}}/complete
+
+### 6. User's sessions (upcoming + completed)
+GET {{baseUrl}}/users/{{userId}}/sessions
